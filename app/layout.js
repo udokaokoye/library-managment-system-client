@@ -20,9 +20,55 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
+        // suppressHydrationWarning helps avoid React hydration warnings when
+        // the browser (or an extension) mutates attributes between SSR and client boot.
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="app-root min-h-screen flex flex-col">
+          <header className="site-header w-full border-b bg-[color:var(--bg)]">
+            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="logo font-semibold text-lg">Library</div>
+                <nav className="hidden sm:flex gap-4 text-sm text-[color:var(--muted)]">
+                  <a href="#" className="hover:underline">Home</a>
+                  <a href="#" className="hover:underline">Catalog</a>
+                  <a href="#" className="hover:underline">My Loans</a>
+                </nav>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="sr-only" htmlFor="site-search">Search books</label>
+                <input id="site-search" className="search-input px-3 py-2 rounded-md border" placeholder="Search books, authors..." />
+                <a href="/login" className="btn-primary px-3 py-2 rounded-md inline-block">Sign in</a>
+              </div>
+            </div>
+          </header>
+
+          <div className="container mx-auto px-6 py-8 flex-1 w-full">
+            <div className="layout-grid grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-6">
+              <aside className="sidebar hidden sm:block">
+                <div className="p-4 rounded-md border bg-[color:var(--panel)]">
+                  <h3 className="font-semibold mb-3">Browse</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a className="block hover:underline" href="#">All books</a></li>
+                    <li><a className="block hover:underline" href="#">New arrivals</a></li>
+                    <li><a className="block hover:underline" href="#">Top rated</a></li>
+                    <li><a className="block hover:underline" href="#">Categories</a></li>
+                  </ul>
+                </div>
+              </aside>
+
+              <main className="main-content">{children}</main>
+            </div>
+          </div>
+
+          <footer className="site-footer w-full border-t">
+            <div className="container mx-auto px-6 py-4 text-sm text-[color:var(--muted)]">
+              © {new Date().getFullYear()} Library — Built with Next.js
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );

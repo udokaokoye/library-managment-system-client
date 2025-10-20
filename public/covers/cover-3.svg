@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="220" viewBox="0 0 160 220">
+  <rect width="160" height="220" fill="#fff7ed"/>
+  <rect x="10" y="10" width="140" height="200" rx="4" fill="#7c2d12"/>
+  <text x="80" y="120" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#fff7ed" text-anchor="middle">To Kill a</text>
+  <text x="80" y="140" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#fff7ed" text-anchor="middle">Mockingbird</text>
+</svg>
