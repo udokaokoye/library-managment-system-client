@@ -41,6 +41,7 @@ export default function RootLayout({ children }) {
                 <label className="sr-only" htmlFor="site-search">Search books</label>
                 <input id="site-search" className="search-input px-3 py-2 rounded-md border" placeholder="Search books, authors..." />
                 <a href="/login" className="btn-primary px-3 py-2 rounded-md inline-block">Sign in</a>
+                <a href="/signup" className="btn-primary px-3 py-2 rounded-md inline-block">Sign up</a>
               </div>
             </div>
           </header>
