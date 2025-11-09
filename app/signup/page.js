@@ -9,6 +9,7 @@ function Signup() {
 
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
+    const [userTypeId, setUserTypeId] = useState("2");
   const [major, setmajor] = useState("");
   const [mNumber, setmNumber] = useState("");
 
@@ -33,9 +34,7 @@ function Signup() {
       !password.trim() ||
       !confirmPassword.trim() ||
       !firstName.trim() ||
-      !lastName.trim() ||
-      !major.trim() ||
-      !mNumber.trim()
+      !lastName.trim()
     ) {
       seterror("Please fill in all fields");
       return;
@@ -62,14 +61,38 @@ function Signup() {
     formData.append("lastName", lastName);
     formData.append("email", email);
     formData.append("password", password);
-    formData.append("UserTypeId", 2);
+    formData.append("userTypeId", 2);
+
+
+      const registrationData = {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+          userTypeId: parseInt(userTypeId, 10)
+      };
 
     try {
       const res = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
-        body: formData,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        body: JSON.stringify(registrationData),
+          credentials: 'include'
       });
-      const data = res.json();
+
+        if (!res.ok) {
+            const errorData = await res.json(); // Get the error message from Spring
+            seterror(errorData.message || "An error occurred.");
+            return;
+        }
+        const data = await res.json();
+        console.log("Registration successful:", data);
+
+        alert("Registration complete! Please log in.");
+        router.push("/login");
+
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -114,21 +137,14 @@ function Signup() {
             placeholder="Enter email"
           />
           <div className="flex flex-row gap-x-2">
-            <input
-              value={mNumber}
-              onChange={(e) => setmNumber(e.target.value)}
-              className="px-3 py-2 border rounded"
-              type="text"
-              placeholder="M-Number"
-            />
-
-            <input
-              value={major}
-              onChange={(e) => setmajor(e.target.value)}
-              className="px-3 py-2 border rounded"
-              type="text"
-              placeholder="Enter Major"
-            />
+              <select
+                  value={userTypeId}
+                  onChange={(e) => setUserTypeId(e.target.value)}
+                  className="px-3 py-2 border rounded"
+              >
+                  <option value="1">Admin</option>
+                  <option value="2">User</option>
+              </select>
           </div>
           <input
             value={password}
