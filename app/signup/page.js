@@ -21,11 +21,11 @@ function Signup() {
   }
 
   function isValidPassword(password) {
-  const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-  return regex.test(password);
-}
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    return regex.test(password);
+  }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (
@@ -47,20 +47,36 @@ function Signup() {
     }
 
     if (!isValidPassword(password)) {
-        seterror("Please enter a valid password. at least 6 alpa-numeric chars")
-        return
+      seterror("Please enter a valid password. at least 6 alpa-numeric chars");
+      return;
     }
 
     if (password !== confirmPassword) {
-        seterror("Password does not match.")
-        return;
+      seterror("Password does not match.");
+      return;
     }
 
+    seterror("");
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("UserTypeId", 2);
 
+    try {
+      const res = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        body: formData,
+      });
+      const data = res.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
 
-    seterror("")
-    alert("complete");
-    // !Make API call to create usere here
+      seterror("an error occured");
+    }
+    // alert("complete");
   }
   return (
     <div className="container mx-auto px-6 py-12">
