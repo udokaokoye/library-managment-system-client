@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "@/app/components/header";
+import { AuthProvider } from "./context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,26 +27,10 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+      <AuthProvider>
         <div className="app-root min-h-screen flex flex-col">
-          <header className="site-header w-full border-b bg-[color:var(--bg)]">
-            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="logo font-semibold text-lg">Library</div>
-                <nav className="hidden sm:flex gap-4 text-sm text-[color:var(--muted)]">
-                  <a href="#" className="hover:underline">Home</a>
-                  <a href="#" className="hover:underline">Catalog</a>
-                  <a href="#" className="hover:underline">My Loans</a>
-                </nav>
-              </div>
 
-              <div className="flex items-center gap-3">
-                <label className="sr-only" htmlFor="site-search">Search books</label>
-                <input id="site-search" className="search-input px-3 py-2 rounded-md border" placeholder="Search books, authors..." />
-                <a href="/login" className="btn-primary px-3 py-2 rounded-md inline-block">Sign in</a>
-                <a href="/signup" className="btn-primary px-3 py-2 rounded-md inline-block">Sign up</a>
-              </div>
-            </div>
-          </header>
+            <Header />
 
           <div className="container mx-auto px-6 py-8 flex-1 w-full">
             <div className="layout-grid grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-6">
@@ -70,6 +56,7 @@ export default function RootLayout({ children }) {
             </div>
           </footer>
         </div>
+          </AuthProvider>
       </body>
     </html>
   );

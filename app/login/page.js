@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { fetchUser } = useAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -33,8 +35,10 @@ export default function LoginPage() {
                 setError("Invalid email or password.");
                 return;
             }
-
-            router.push("/");
+            await fetchUser();
+            window.location.href = "/";
+            router.push("/my-account");
+            router.refresh();
 
         } catch (err) {
             console.error(err);
