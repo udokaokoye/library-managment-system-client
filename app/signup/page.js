@@ -57,19 +57,20 @@ function Signup() {
     }
 
     seterror("");
-    const formData = new FormData();
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("UserTypeId", 2);
+    const payload = {
+    "firstName": firstName,
+    "lastName": lastName,
+    "email": email,
+    "password": password,
+    "userTypeId": 2
+}
 
     try {
       const res = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
-        body: formData,
+        body: JSON.stringify(payload),
       });
-      const data = res.json();
+      const data = await res.json();
       console.log(data);
     } catch (error) {
       console.log(error);
