@@ -50,7 +50,6 @@ export default function LoginPage() {
             <div className="max-w-md mx-auto p-6 rounded-md border bg-[color:var(--panel)]">
                 <h1 className="text-2xl font-semibold mb-4">Sign in</h1>
 
-                {/* 7. Add error display */}
                 {error && (
                     <span className="mb-3 block text-lg text-red-500 font-bold">
             {error}
