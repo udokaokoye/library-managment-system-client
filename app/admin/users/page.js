@@ -97,9 +97,9 @@ export default function AdminUsersPage() {
                                     </span>
                             </td>
 
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-6 py-4 text-center space-x-3">
                                 <button
-                                    onClick={() => router.push(`/admin/reservations`)}
+                                    onClick={() => router.push(`/admin/users/${u.id}`)}
                                     className="text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline"
                                 >
                                     View History
