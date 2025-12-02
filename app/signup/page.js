@@ -83,7 +83,7 @@ function Signup() {
       });
 
         if (!res.ok) {
-            const errorData = await res.json(); // Get the error message from Spring
+            const errorData = await res.json();
             seterror(errorData.message || "An error occurred.");
             return;
         }
@@ -99,7 +99,6 @@ function Signup() {
 
       seterror("an error occured");
     }
-    // alert("complete");
   }
   return (
     <div className="container mx-auto px-6 py-12">
