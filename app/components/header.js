@@ -58,26 +58,14 @@ export default function Header() {
                     <Link href="/" className="logo font-semibold text-lg">
                         Library
                     </Link>
-                    <nav className="hidden sm:flex gap-4 text-sm text-[color:var(--muted)]">
-                        <Link href="/" className="hover:underline">
-                            Home
-                        </Link>
-                        <Link href="/catalog" className="hover:underline">
-                            Catalog
-                        </Link>
 
-                        {user && user.userType && user.userType.toUpperCase() === 'USER' && (
-                            <Link href="/my-loans" className="hover:underline">
-                                My Loans
-                            </Link>
-                        )}
-
-                        {user && user.userType && user.userType.toUpperCase() === 'ADMIN' && (
+                    {user && user.userType && user.userType.toUpperCase() === 'ADMIN' && (
+                        <nav className="hidden sm:flex gap-4 text-sm text-[color:var(--muted)]">
                             <Link href="/admin/reservations" className="hover:underline font-semibold text-blue-600">
                                 All Reservations
                             </Link>
-                        )}
-                    </nav>
+                        </nav>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3">
