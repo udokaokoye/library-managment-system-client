@@ -71,7 +71,7 @@ export default function MyReservationsPage() {
         <div className="w-full max-w-5xl mx-auto mt-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-white">My Reservations</h1>
-                <Link href="/public" className="text-blue-400 hover:text-blue-300 text-sm">← Browse more books</Link>
+                <Link href="/" className="text-blue-400 hover:text-blue-300 text-sm">← Browse more books</Link>
             </div>
 
             {reservations.length === 0 ? (

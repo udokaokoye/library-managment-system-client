@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const { fetchUser } = useAuth();
+  const { checkUser } = useAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -35,7 +35,7 @@ export default function LoginPage() {
                 setError("Invalid email or password.");
                 return;
             }
-            await fetchUser();
+            await checkUser();
             window.location.href = "/";
             router.push("/my-account");
             router.refresh();
