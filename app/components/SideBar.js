@@ -38,8 +38,8 @@ export default function Sidebar() {
                 </h3>
 
                 <nav className="space-y-2">
-                    <Link href="/" className={getLinkClass("/")}>
-                        <span>🏠</span> Home
+                    <Link href="/dashboard" className={getLinkClass("/dashboard")}>
+                        <span>🏠</span> Dashboard
                     </Link>
 
                     <Link href="/books" className={getLinkClass("/books")}>
@@ -49,11 +49,11 @@ export default function Sidebar() {
 
                     {mounted && isAdmin ? (
                         <>
-                            <Link href="/admin/dashboard" className={getLinkClass("/admin/dashboard")}>
+                            <Link href="/admin" className={getLinkClass("/admin")}>
                                 <span>📊</span> Dashboard
                             </Link>
 
-                            <Link href="/reservations" className={getLinkClass("/admin/reservations")}>
+                            <Link href="/admin/reservations" className={getLinkClass("/admin/reservations")}>
                                 <span>📅</span> Reservations
                             </Link>
 
