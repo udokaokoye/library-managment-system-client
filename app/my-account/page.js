@@ -70,22 +70,6 @@ export default function MyAccountPage() {
     return (
         <div className="max-w-2xl mx-auto p-6 border rounded-md bg-[color:var(--panel)]">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">My Account</h1>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setIsEditing(!isEditing);
-                        setMessage("");
-                        setFormData({
-                            firstName: user.firstName || "",
-                            lastName: user.lastName || "",
-                            email: user.email || "",
-                        });
-                    }}
-                    className="px-3 py-1 text-sm rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-                >
-                    {isEditing ? "Cancel" : "Edit Profile"}
-                </button>
             </div>
 
             {message && (

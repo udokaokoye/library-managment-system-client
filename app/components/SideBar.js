@@ -8,6 +8,7 @@ import { useAuth } from "@/app/context/AuthContext";
 export default function Sidebar() {
     const { user } = useAuth();
     const pathname = usePathname();
+
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -28,61 +29,57 @@ export default function Sidebar() {
         }`;
     };
 
-    const isAdmin = mounted && user && user.userType && user.userType.toUpperCase() === 'ADMIN';
+    const isLoggedIn = mounted && user;
+    const isAdmin = isLoggedIn && user.userType && user.userType.toUpperCase() === 'ADMIN';
+
+
+    const reservationLink = isAdmin ? "/reservations" : "/reservations/my-reservations";
 
     return (
-        <aside className="hidden sm:flex flex-col w-64 bg-slate-950 text-slate-300 flex-shrink-0 border-r border-slate-800">
+        <aside className="hidden sm:flex flex-col w-64 bg-slate-950 text-slate-300 flex-shrink-0 border-r border-slate-800 sticky top-0 h-screen overflow-y-auto">
             <div className="p-6">
                 <h3 className="font-bold text-xs uppercase tracking-widest text-slate-500 mb-6">
                     Main Menu
                 </h3>
 
                 <nav className="space-y-2">
+                    {/* 1. HOME (Always Visible) */}
                     <Link href="/" className={getLinkClass("/")}>
                         <span>🏠</span> Home
                     </Link>
 
-                    <Link href="/books" className={getLinkClass("/books")}>
-                        <span>📚</span> Books
-                    </Link>
-
-
-                    {mounted && isAdmin ? (
+                    {isLoggedIn && (
                         <>
-                            <Link href="/admin/dashboard" className={getLinkClass("/admin/dashboard")}>
-                                <span>📊</span> Dashboard
-                            </Link>
 
-                            <Link href="/reservations" className={getLinkClass("/admin/reservations")}>
+
+                            <Link href={reservationLink} className={getLinkClass(reservationLink)}>
                                 <span>📅</span> Reservations
                             </Link>
+                        </>
+                    )}
 
+                    {isAdmin && (
+                        <>
                             <div className="pt-4 mt-4 border-t border-slate-800">
                                 <h3 className="font-bold text-xs uppercase tracking-widest text-slate-500 mb-4">
-                                    Admin
+                                    Admin Controls
                                 </h3>
+                                <Link href="/admin/dashboard" className={getLinkClass("/admin/dashboard")}>
+                                    <span>📊</span> Dashboard
+                                </Link>
                                 <Link href="/admin/users" className={getLinkClass("/admin/users")}>
                                     <span>👥</span> Users
                                 </Link>
                                 <Link href="/admin/add-book" className={getLinkClass("/admin/add-book")}>
                                     <span>➕</span> Add Book
                                 </Link>
+                                <Link href="/admin/books" className={getLinkClass("/admin/books")}>
+                                    <span>📦</span> Inventory
+                                </Link>
                             </div>
-                        </>
-                    ) : mounted && (
-
-                        <>
-                            <Link href="/reservations/my-reservations" className={getLinkClass("/reservations/my-reservations")}>
-                                <span>🔖</span> My Loans
-                            </Link>
                         </>
                     )}
 
-                    <div className="pt-4 mt-4 border-t border-slate-800">
-                        <Link href="/settings" className={getLinkClass("/settings")}>
-                            <span>⚙️</span> Settings
-                        </Link>
-                    </div>
                 </nav>
             </div>
         </aside>

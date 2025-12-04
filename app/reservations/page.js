@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function AdminReservationsPage() {
-    const [reservations, setReservations] = useState([]);
+    const [allReservations, setAllReservations] = useState([]); // Renamed for clarity
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // 1. PAGINATION STATE
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     const { user, isLoading: authLoading } = useAuth();
     const router = useRouter();
 
@@ -28,7 +33,10 @@ export default function AdminReservationsPage() {
             });
             if (!res.ok) throw new Error("Failed to fetch reservations");
             const data = await res.json();
-            setReservations(data);
+
+            // Sort by ID Descending (Newest first)
+            const sortedData = data.sort((a, b) => b.id - a.id);
+            setAllReservations(sortedData);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -57,18 +65,17 @@ export default function AdminReservationsPage() {
         }
     }
 
+    // Helpers
     const formatDate = (dateString) => {
         if (!dateString) return "N/A";
         return new Date(dateString).toLocaleDateString();
     };
 
-    // Helper: Removes underscores (LATE_RETURNED -> Late Returned)
     const formatStatus = (status) => {
         if (!status) return "";
         return status.replace(/_/g, " ");
     };
 
-    // Helper: Calculates days late
     const calculateDaysLate = (expectedStr, actualStr) => {
         if (!expectedStr || !actualStr) return 0;
         const expected = new Date(expectedStr);
@@ -80,7 +87,19 @@ export default function AdminReservationsPage() {
         return diffDays > 0 ? diffDays : 0;
     };
 
-    if (authLoading || loading) return <div className="p-8 text-center text-white">Loading...</div>;
+    // 2. PAGINATION LOGIC
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentReservations = allReservations.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(allReservations.length / itemsPerPage);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
+
+    if (authLoading || loading) return <div className="p-8 text-center text-slate-400">Loading...</div>;
     if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
 
     return (
@@ -94,15 +113,15 @@ export default function AdminReservationsPage() {
                         <th className="px-6 py-4 text-sm font-medium">Book</th>
                         <th className="px-6 py-4 text-sm font-medium">Status</th>
                         <th className="px-6 py-4 text-sm font-medium">Date Info</th>
-                        {/* NEW COLUMN */}
                         <th className="px-6 py-4 text-sm font-medium">Condition</th>
                         <th className="px-6 py-4 text-sm font-medium text-center">Actions</th>
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700">
-                    {reservations.map((res) => (
-                        <tr key={res.id} className="hover:bg-slate-750 text-slate-200">
 
+                    {/* 3. RENDER SLICED LIST */}
+                    {currentReservations.map((res) => (
+                        <tr key={res.id} className="hover:bg-slate-750 text-slate-200">
                             <td className="px-6 py-4 text-sm font-medium">{res.userFirstName}</td>
                             <td className="px-6 py-4 text-sm text-slate-300">{res.bookTitle}</td>
 
@@ -168,7 +187,6 @@ export default function AdminReservationsPage() {
                                 )}
                             </td>
 
-                            {/* ACTIONS */}
                             <td className="px-6 py-4 text-sm text-center">
                                 <div className="flex justify-center gap-2">
                                     {res.status === 'RESERVED' && (
@@ -192,7 +210,38 @@ export default function AdminReservationsPage() {
                     ))}
                     </tbody>
                 </table>
-                {reservations.length === 0 && <p className="text-center py-6 text-slate-500">No reservations found.</p>}
+
+                {allReservations.length === 0 && (
+                    <p className="text-center py-6 text-slate-500">No reservations found.</p>
+                )}
+
+                {/* 4. PAGINATION FOOTER */}
+                {totalPages > 1 && (
+                    <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-between items-center">
+                        <span className="text-xs text-slate-400">
+                            Showing {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, allReservations.length)} of {allReservations.length}
+                        </span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 text-xs rounded border border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Previous
+                            </button>
+                            <span className="px-3 py-1 text-xs text-slate-300 font-mono flex items-center">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1 text-xs rounded border border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -1,119 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Header() {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
 
-    useEffect(() => {
-        async function checkSession() {
-            try {
-
-                const res = await fetch("http://localhost:8080/users/user-details", {
-                    credentials: "include",
-                });
-
-                if (res.ok) {
-                    const userData = await res.json();
-                    setUser(userData);
-                } else {
-                    setUser(null);
-                }
-            } catch (err) {
-                console.log("Not logged in");
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        checkSession();
-    }, []);
-
-    async function handleLogout(e) {
-        e.preventDefault();
-        try {
-
-            await fetch("http://localhost:8080/logout", {
-                method: "POST",
-                credentials: "include",
-            });
-
-            setUser(null);
-            router.push("/");
-            router.refresh();
-        } catch (err) {
-            console.error("Logout failed", err);
-        }
-    }
+    const { user, logout } = useAuth();
 
     return (
-        <header className="site-header w-full border-b bg-[color:var(--bg)]">
-            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <Link href="/" className="logo font-semibold text-lg">
-                        Library
-                    </Link>
+        <header className="bg-slate-950 border-b border-slate-800 text-white sticky top-0 z-50">
+            <div className="container mx-auto px-6 py-4 flex justify-between items-center">
 
-                    {user && user.userType && user.userType.toUpperCase() === 'ADMIN' && (
-                        <nav className="hidden sm:flex gap-4 text-sm text-[color:var(--muted)]">
-                            <Link href="/admin/reservations" className="hover:underline font-semibold text-blue-600">
-                                All Reservations
-                            </Link>
-                        </nav>
-                    )}
-                </div>
+                <Link href="/" className="text-xl font-bold flex items-center gap-2 text-blue-500">
+                    <span>📚</span> Library System
+                </Link>
 
-                <div className="flex items-center gap-3">
-                    <label className="sr-only" htmlFor="site-search">
-                        Search books
-                    </label>
-                    <input
-                        id="site-search"
-                        className="search-input px-3 py-2 rounded-md border"
-                        placeholder="Search books..."
-                    />
-                    {!loading && (
+                <div className="flex items-center gap-6">
+                    {user ? (
                         <>
-                            {user ? (
-                                <>
-                                    <Link
-                                        href="/my-account"
-                                        className="btn-primary px-3 py-2 rounded-md inline-block"
-                                    >
-                                        My Account
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="px-3 py-2 rounded-md inline-block border hover:bg-gray-100"
-                                    >
-                                        Log out
-                                    </button>
-                                </>
-                            ) : (
+              <span className="text-slate-400 text-sm">
+                Welcome, <span className="text-white font-medium">{user.firstName}</span>
+              </span>
 
-                                <>
-                                    <Link
-                                        href="/login"
-                                        className="btn-primary px-3 py-2 rounded-md inline-block"
-                                    >
-                                        Sign in
-                                    </Link>
-                                    <Link
-                                        href="/signup"
-                                        className="btn-primary px-3 py-2 rounded-md inline-block"
-                                    >
-                                        Sign up
-                                    </Link>
-                                </>
-                            )}
+                            <button
+                                onClick={logout}
+                                className="text-sm bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-4 py-2 rounded-lg transition-all border border-red-600/20"
+                            >
+                                Log out
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/login" className="text-sm text-slate-300 hover:text-white transition-colors">
+                                Sign In
+                            </Link>
+                            <Link
+                                href="/signup"
+                                className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all shadow-lg shadow-blue-900/20"
+                            >
+                                Sign Up
+                            </Link>
                         </>
                     )}
-
                 </div>
             </div>
         </header>

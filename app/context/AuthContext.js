@@ -1,43 +1,63 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 const AuthContext = createContext();
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
-
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
+    useEffect(() => {
+        checkUser();
+    }, []);
 
-    const fetchUser = async () => {
-        setIsLoading(true);
+    const checkUser = async () => {
         try {
-            // Make sure this URL matches your actual endpoint (e.g. /api/users/me)
+
             const res = await fetch("http://localhost:8080/users/user-details", {
-                credentials: "include",
+                credentials: "include"
             });
+
             if (res.ok) {
                 const data = await res.json();
                 setUser(data);
             } else {
                 setUser(null);
             }
-        } catch (error) {
+        } catch (err) {
+            console.error("Auth check failed", err);
             setUser(null);
         } finally {
             setIsLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchUser();
-    }, []);
+
+    const logout = async () => {
+        try {
+            // 1. Tell Backend to kill session
+            await fetch("http://localhost:8080/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+        } catch (err) {
+            console.error("Logout request failed", err);
+        }
+
+        setUser(null);
+
+        router.push("/");
+        router.refresh();
+    };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, fetchUser, setUser }}>
+        <AuthContext.Provider value={{ user, isLoading, checkUser, logout, setUser }}>
             {children}
         </AuthContext.Provider>
     );
 }
-export function useAuth() {
-    return useContext(AuthContext);
-}
+
+export const useAuth = () => useContext(AuthContext);
