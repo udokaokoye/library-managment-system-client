@@ -9,7 +9,6 @@ function Signup() {
 
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
-    const [userTypeId, setUserTypeId] = useState("2");
   const [major, setmajor] = useState("");
   const [mNumber, setmNumber] = useState("");
 
@@ -56,20 +55,14 @@ function Signup() {
     }
 
     seterror("");
-    const formData = new FormData();
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("userTypeId", 2);
-
 
       const registrationData = {
           firstName: firstName,
           lastName: lastName,
           email: email,
           password: password,
-          userTypeId: parseInt(userTypeId, 10)
+          // Always register as normal USER (id=2)
+          userTypeId: 2
       };
 
     try {
@@ -135,16 +128,6 @@ function Signup() {
             type="email"
             placeholder="Enter email"
           />
-          <div className="flex flex-row gap-x-2">
-              <select
-                  value={userTypeId}
-                  onChange={(e) => setUserTypeId(e.target.value)}
-                  className="px-3 py-2 border rounded"
-              >
-                  <option value="1">Admin</option>
-                  <option value="2">User</option>
-              </select>
-          </div>
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
