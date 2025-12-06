@@ -6,8 +6,6 @@ import { useAuth } from "@/app/context/AuthContext";
 
 export default function AddBookPage() {
     const router = useRouter();
-
-    // Get the auth state
     const { user, isLoading: authLoading } = useAuth();
 
     const [formData, setFormData] = useState({
@@ -20,17 +18,9 @@ export default function AddBookPage() {
     const [error, setError] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
-    // 1. PROTECTION LOGIC
     useEffect(() => {
-        // If Auth is still loading, DO NOTHING. Wait.
         if (authLoading) return;
-
-        console.log("Add Book Auth Check:", user);
-
-        // If loading is done, and user is NOT an admin, redirect.
-        // We use ?. and toUpperCase() to be safe.
         if (!user || (user.userType && user.userType.toUpperCase() !== "ADMIN")) {
-            console.warn("Unauthorized access to Add Book. Redirecting...");
             router.push("/");
         }
     }, [user, authLoading, router]);
@@ -50,23 +40,28 @@ export default function AddBookPage() {
             return;
         }
 
+        // --- SMART IMAGE LOGIC ---
+        let finalPictureUrl = formData.pictureUrl;
+
+        // If it's not a real URL, treat it as a keyword
+        if (finalPictureUrl && !finalPictureUrl.startsWith("http") && !finalPictureUrl.startsWith("/")) {
+            finalPictureUrl = `https://placehold.co/400x600/1e293b/475569?text=${encodeURIComponent(finalPictureUrl)}`;
+        }
+
         try {
             const res = await fetch("http://localhost:8080/books", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include", // CRITICAL for Admin check
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({
                     ...formData,
+                    pictureUrl: finalPictureUrl,
                     publicationYear: parseInt(formData.publicationYear),
                     totalCopies: parseInt(formData.totalCopies),
                 }),
             });
 
-            if (!res.ok) {
-                throw new Error("Failed to create book");
-            }
+            if (!res.ok) throw new Error("Failed to create book");
 
             alert("Book created successfully!");
             router.push("/");
@@ -77,23 +72,9 @@ export default function AddBookPage() {
         }
     };
 
-    // 2. SHOW LOADING SCREEN
-    // This prevents the Form from showing up for 1 second before redirecting
-    if (authLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="text-slate-400 text-lg">Verifying Admin Permissions...</div>
-            </div>
-        );
-    }
+    if (authLoading) return <div className="flex justify-center items-center min-h-screen text-slate-400">Loading...</div>;
+    if (!user || user.userType.toUpperCase() !== "ADMIN") return null;
 
-    // If we pass the loading check and the user is null/not admin, the useEffect above will redirect.
-    // We can return null here to avoid flashing the form during that split second redirect.
-    if (!user || user.userType.toUpperCase() !== "ADMIN") {
-        return null;
-    }
-
-    // 3. RENDER FORM (Only reaches here if Admin is confirmed)
     return (
         <div className="max-w-2xl mx-auto p-6">
             <h1 className="text-3xl font-bold text-white mb-8">Add New Book</h1>
@@ -101,7 +82,6 @@ export default function AddBookPage() {
             <form onSubmit={handleSubmit} className="space-y-6 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-xl">
                 {error && <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded">{error}</div>}
 
-                {/* Title */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Book Title *</label>
                     <input
@@ -114,7 +94,6 @@ export default function AddBookPage() {
                     />
                 </div>
 
-                {/* Author */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Author *</label>
                     <input
@@ -127,7 +106,6 @@ export default function AddBookPage() {
                     />
                 </div>
 
-                {/* Year & Copies */}
                 <div className="grid grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-2">Publication Year</label>
@@ -153,21 +131,26 @@ export default function AddBookPage() {
                     </div>
                 </div>
 
-                {/* Picture URL */}
+
                 <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Cover Image URL</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Cover Image <span className="text-slate-500 font-normal">(Link or Text)</span>
+                    </label>
                     <input
                         type="text"
                         name="pictureUrl"
                         value={formData.pictureUrl}
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="https://..."
+
+                        placeholder="e.g. Paste a URL... OR just type 'Mystery' to auto-generate"
                     />
-                    <p className="text-xs text-slate-500 mt-1">Leave blank to use placeholder</p>
+
+                    <p className="text-xs text-blue-400 mt-2">
+                        ✨ <strong>Tip:</strong> Don&apos;t have a link? Just type a topic like <em>&quot;History&quot;</em> or <em>&quot;Space&quot;</em> and we will create a cover for you!
+                    </p>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-4 pt-4">
                     <button
                         type="button"
